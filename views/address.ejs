@@ -1,0 +1,122 @@
+<% include ./partials/header.ejs%>
+    <section class="h-full w-full px-16 flex-1 flex gap-2 my-8">
+        <%include ./partials/profile.ejs%>
+        <div class="right w-3/4 bg-white min-h-full">
+            <h1 class="text-2xl h-20 flex items-center px-4 border-b-4 py-4">Address</h1>
+            <div class="right-bottom">
+                <div class="details mt-2 mb-4 px-6 ">
+                  <%if(loggedUser.address.street){%>
+                    
+                    <div id="addressBar" class="rounded w-full py-6 px-3 text-lg cursor-pointer border leading-tight relative"> 
+                      <p><%=loggedUser.address.street +', '+ loggedUser.address.city+', '+ loggedUser.address.state+', '+ loggedUser.address.country%></p>
+                      <h4><%=loggedUser.address.pincode%></h4>
+                      <h4 onclick="ShowUpdateAddressForm()" class="text-xs mt-2 text-indigo-700 text-white px-2 py-1 uppercase font-medium bg-indigo-700 w-max">change</h4>
+                    </div>
+                    
+                    <%}else{%>
+
+                      <form id="addressForm" class="w-full" method="post" action="/update/address">
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="street">
+                            Street & Area
+                          </label>
+                          <input name="street" required value="<%=loggedUser.address.street%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" type="text" placeholder="123 Street Name">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="city">
+                            City
+                          </label>
+                          <input name="city" required value="<%=loggedUser.address.city%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="city" type="text" placeholder="New York">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="state">
+                            State
+                          </label>
+                          <input name="state" required value="<%=loggedUser.address.state%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="state" type="text" placeholder="NY">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="zip">
+                            PIN Code
+                          </label>
+                          <input name="pincode" required value="<%=loggedUser.address.pincode%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="zip" type="text" placeholder="10001">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="country">
+                            Country
+                          </label>
+                          <input name="country" required value="<%=loggedUser.address.country%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="country" type="text" placeholder="United States">
+                        </div>
+                        <input type="submit" value="Save address" class="hover:text-black transition-all duration-300 flex gap-1 items-center hover:border-transparent hover:bg-transparent w-max text-white bg-[#2550aa] py-1 px-3 border border-zinc-300 rounded-full">
+                      </form>
+                    <%}%>
+                    
+                </div>
+            </div>
+
+            
+            
+        </div>
+    </section>  
+
+<script>
+  
+  // <div class="rounded w-full py-6 px-3 text-lg cursor-pointer border leading-tight relative"> 
+  //                 <p>Hno. 96 gupta colony anand nagar bhopal</p>
+  //                 <h4>462022</h4>
+  //                 <h4 class="text-xs mt-2 text-indigo-700 text-white px-2 py-1 uppercase font-medium bg-indigo-700 w-max">change</h4>
+  //               </div>
+
+
+  function ShowUpdateAddressForm(){
+    let form = document.createElement('form')
+    form.className='w-full'
+    form.id = 'addressForm'
+    form.method = 'post'
+    form.action = '/update/address'
+    form.innerHTML =`
+    <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="street">
+                            Street & Area
+                          </label>
+                          <input name="street" required value="<%=loggedUser.address.street%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="address" type="text" placeholder="123 Street Name">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="city">
+                            City
+                          </label>
+                          <input name="city" required value="<%=loggedUser.address.city%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="city" type="text" placeholder="New York">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="state">
+                            State
+                          </label>
+                          <input name="state" required value="<%=loggedUser.address.state%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="state" type="text" placeholder="NY">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="zip">
+                            PIN Code
+                          </label>
+                          <input name="pincode" required value="<%=loggedUser.address.pincode%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="zip" type="text" placeholder="10001">
+                        </div>
+                        <div class="mb-4">
+                          <label class="block text-gray-700 text-sm font-bold mb-1" for="country">
+                            Country
+                          </label>
+                          <input name="country" required value="<%=loggedUser.address.country%>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="country" type="text" placeholder="United States">
+                        </div>
+                        <input type="submit" value="Update" class="hover:text-black transition-all duration-300 flex gap-1 items-center hover:border-transparent hover:bg-transparent w-max text-white bg-[#2550aa] py-1 px-3 border border-zinc-300 rounded-full">
+                        
+
+                          
+    `
+
+
+    document.querySelector('.right-bottom .details').removeChild(document.querySelector("#addressBar"))
+    document.querySelector('.right-bottom .details').appendChild(form)
+  }
+
+
+</script>
+
+
+<% include ./partials/footer.ejs%>

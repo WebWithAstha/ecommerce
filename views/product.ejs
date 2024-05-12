@@ -1,0 +1,82 @@
+<% include ./partials/header.ejs %>
+    <section class="h-full w-full flex gap-2 my-10">
+        <div class="left w-2/5 flex gap-2 px-6">
+
+            <div class="imgs w-24">
+                <%product.images.forEach((img,index)=>{%>
+                    <div id="img<%=index%>" onmouseenter="changeMainImg(this,'<%=img%>')"
+                        class="img w-full h-24 mb-2 rounded-xs overflow-hidden flex justify-center items-center border-2 p-1 cursor-pointer <%= (index===0) ? 'border-red-600':''%> ">
+                        <img src="/images/uploads/<%=img%>" alt="">
+                    </div>
+                    <%})%>
+            </div>
+            <div id="mainImg" class="img w-full h-[30rem] rounded-sm overflow-hidden  flex justify-center items-center">
+                <img class="h-full" src="/images/uploads/<%=product.images[0]%>" alt="">
+            </div>
+
+        </div>
+        <div class="right w-2/5 h-full pr-6">
+            <h4 class="opacity-70">
+                <%=product.brand%>
+            </h4>
+            <div class="flex items-center">
+                <i class="ri-star-line"></i><i class="ri-star-line"></i><i class="ri-star-line"></i><i
+                    class="ri-star-line"></i><i class="ri-star-line"></i>
+                <span class="ml-1">00</span>
+            </div>
+            <h1 class="text-3xl leading-[1] my-1 font-semibold w-[90%]">
+                <%=product.name%>
+            </h1>
+            <h4>description:</h4>
+            <p>
+                <%=product.description%>
+            </p>
+            <div class="flex items-end gap-2  my-4">
+                <h1 class="text-3xl">₹<span>
+                        <%=product.discountprice%>
+                    </span></h1>
+                <s>₹<%=product.price%></s>
+
+            </div>
+            <div class="flex gap-2">
+
+                <button onclick="addAndGoToCart(this,'<%=product._id%>')"
+                    class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-500 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">Add
+                    to Cart</button>
+                <a href="#"
+                    class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-700 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">
+                    <button>Buy now</button>
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <script>
+        function changeMainImg(elem, img) {
+            for (var i = 1; i < elem.parentNode.childNodes.length; i += 2) {
+                elem.parentNode.childNodes[i].classList.remove('border-red-600')
+            }
+            elem.classList.add('border-red-600')
+            elem.parentNode.parentNode.querySelector("#mainImg img").src = `/images/uploads/${img}`
+        }
+
+        function addAndGoToCart(elem,productId){
+            elem.classList.toggle('bg-blue-500')
+            elem.classList.toggle('hover:bg-[#2550aa]')
+            elem.classList.toggle('bg-zinc-500')
+            elem.textContent = 'Going to Cart'
+            fetch(`/cart/add/${productId}`)
+            .then(raw=>raw.json())
+            .then(response=>{
+                setTimeout(()=>{
+                    window.location.href='/cart'
+                },1000)
+            })
+        }
+
+    </script>
+
+    <% include ./partials/footer.ejs %>

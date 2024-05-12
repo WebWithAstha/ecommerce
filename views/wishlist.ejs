@@ -1,0 +1,35 @@
+<% include ./partials/header.ejs%>
+    <section class="h-full w-full px-16 flex-1 flex gap-2 my-8">
+        <%include ./partials/profile.ejs%>
+        <div class="right w-3/4 bg-white min-h-full">
+            <h1 class="text-2xl h-20 flex gap-1 items-center px-4 border-b-4 py-4">My Wishlist <span>(<%=loggedUser.wishlist.length%>)</span></h1>
+            <div class="prods">
+                <%loggedUser.wishlist.forEach(item=>{%>
+                    <div class="prod px-6 py-2 w-full rounded-lg cursor-pointer flex justify-between mb-2">
+                        <div class="w-3/6 item flex gap-4">
+                            <div class="img w-20 h-28 shrink-0 bg-white flex items-center justify-center">
+                                <img class="h-full object-contain" src="/images/uploads/<%=item.images[0]%>" alt="">
+                            </div>
+                            <div class="dets">
+                                <h1 class="leading-[1] mb-1.5 line-clamp-2 font-medium w-[70%]"><%=item.name%></h1>
+                                <div
+                                    class="flex items-center text-sm py-1 gap-1 bg-emerald-700 text-white w-max px-2 rounded-md">
+                                    <span class="text-xs">4</span>
+                                    <i class="ri-star-fill text-xs"></i>
+                                </div>
+                                <p class="text-lg font-semibold">₹<%=item.discountprice%></p>
+    
+                            </div>
+                        </div>
+                        <i class="ri-delete-bin-7-fill opacity-70 hover:opacity-1"></i>
+                    </div>
+                <%})%>
+            </div>
+            
+        </div>
+    </section>  
+
+
+
+
+<% include ./partials/footer.ejs%>

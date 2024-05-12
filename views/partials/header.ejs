@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce website</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+
+        .scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+
+
+    </style>
+</head>
+
+
+<body class="w-full relative min-h-screen bg-[#fafafa] flex flex-col">
+    <nav class="shadow-sm bg-white px-16 flex py-4 justify-between">
+            <a href="/home" class="sm:text-xl font-semibold">Ecomm</a>
+            <div class="search w-max">
+                <input type="text" class="sm:w-72 w-40 border -mr-2 rounded-l-full bg-transparent px-3 py-1 outline-none">
+                <i class="ri-search-line border-2 rounded-r-full px-3 py-2 hover:bg-zinc-300 bg-zinc-200"></i>
+            </div>
+            <div class="flex gap-4">
+                <a href="/account"
+                    class="hover:text-white transition-all duration-300 flex gap-1 items-center hover:border-transparent hover:bg-[#2550aa] py-1 px-3 border border-zinc-300 rounded-full"><i
+                        class="ri-user-fill"></i><span class="hidden sm:block sm:text-sm">You</span></a>
+                <a href="/cart"
+                    class="hover:text-white transition-all duration-300 flex gap-1 items-center hover:border-transparent hover:bg-[#2550aa] py-1 px-3 border border-zinc-300 rounded-full"><i
+                        class="ri-shopping-cart-fill"></i><span class="hidden sm:block sm:text-sm">Cart</span></a>
+            </div>
+    </nav>

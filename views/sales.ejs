@@ -1,0 +1,113 @@
+<%include ./partials/header.ejs%>
+
+
+  <section class="w-full h-full flex-1 flex px-16 my-6 gap-4 rounded-lg">
+    <div class="left w-1/2 bg-zinc-100 h-full py-2 pb-4">
+      <h1 class=" border-b-2 pb-2 px-10 h-10 flex items-center font-semibold text-xl">New item</h1>
+      <form action="/upload/product" method="post" enctype="multipart/form-data" class="w-full h-full px-10 pt-2">
+        <h4 class="text-sm ml-[3px] mt-2">Product name</h4>
+        <input name="name" required type="text" class="w-full mt-1 outline-none border-2 rounded-lg px-2 py-1">
+        <h4 class="text-sm ml-[3px] mt-2">Description</h4>
+        <input name="description" required type="text" class="w-full mt-1 outline-none border-2 rounded-lg px-2 py-1">
+        <h4 class="text-sm ml-[3px] mt-2">Images<span onclick="selectImages()"
+            class="ml-2 cursor-pointer text-indigo-700 text-xs border-b w-max border-indigo-600">upload images</span>
+        </h4>
+        <input name="images" required type="file" onchange="showImagesInUI(this)" multiple id="selectImgInp">
+        <div class="image-container flex items-center gap-2 mt-2">
+        </div>
+        <div class="flex w-full items-center gap-4 mt-4">
+          <div class=" w-1/2">
+            <h4 class="text-sm ml-[3px] mt-2">Product category</h4>
+            <select name="category" required class="w-full outline-none border-2 rounded-lg px-2 py-1" id="">
+              <option>Footwear</option>
+              <option>Books & stationary</option>
+              <option>Clothing</option>
+              <option>Toys</option>
+            </select>
+          </div>
+          <div class=" w-1/2">
+            <h4 class="text-sm ml-[3px] mt-2">Brand Name</h4>
+            <input name="brand" required type="text" class="w-full outline-none border-2 rounded-lg px-2 py-1">
+          </div>
+        </div>
+        <div class="flex w-full items-center gap-4 mt-4">
+          <div class=" w-1/2">
+            <h4 class="text-sm ml-[3px] mt-2">Price ⟨₹⟩</h4>
+            <input required name="price" type="number" max="50000" min="1"
+              class="w-full outline-none border-2 rounded-lg px-2 py-1">
+          </div>
+          <div class=" w-1/2">
+            <h4 class="text-sm ml-[3px] mt-2">Discounted Price ⟨₹⟩</h4>
+            <input required name="discountprice" type="number" max="50000" min="1"
+              class="w-full outline-none border-2 rounded-lg px-2 py-1">
+          </div>
+
+        </div>
+        <div class=" w-full">
+          <h4 class="text-sm ml-[3px] mt-2">Available Quantity</h4>
+          <input required name="quantity" type="number" max="20" min="1"
+            class="w-full outline-none border-2 rounded-lg px-2 py-1">
+        </div>
+
+        <input type="submit"
+          class="bg-blue-700 text-white px-4 py-2 rounded-full mt-4 font-semibold text-sm uppercase cursor-pointer"
+          value="Upload Product">
+
+      </form>
+    </div>
+    <div class="right w-1/2 bg-zinc-100 h-full py-2">
+      <h1 class=" border-b-2 pb-2 px-10 h-10 flex items-center font-semibold text-xl">All items (<%=products.length%>)</h1>
+      <div class="prods">
+        <%products.forEach(product=>{%>
+          <div id="prod<%=product._id%>" class="prod px-6 py-2 w-full rounded-lg cursor-pointer flex justify-between mb-2">
+            <div class="w-3/6 item flex items-center gap-4">
+              <div class="img w-20 h-28 aspect-square shrink-0 bg-zinc-200">
+                <img class="w-full h-full objec-cover" src="/images/uploads/<%=product.images[0]%>" alt="">
+              </div>
+              <div class="dets">
+                <h1 class="leading-[1] mb-1.5 line-clamp-2 font-medium w-[70%]"><%=product.name%></h1>
+                <h4>Qty : <%=product.quantity%></h4>
+                <p class="text-lg font-semibold">₹<%=product.discountprice%></p>
+              </div>
+            </div>
+            <i onclick="deleteItem(this,'<%=product._id%>')" class="ri-delete-bin-7-fill opacity-70 hover:opacity-1"></i>
+          </div>
+        <%})%>
+      </div>
+
+    </div>
+
+
+  </section>
+  <script>
+    function selectImages() {
+      document.getElementById("selectImgInp").click();
+    }
+    function showImagesInUI(input) {
+      if (input.files.length > 4) {
+        alert("Max 4 images can be uploaded")
+        input.value = ''
+      }
+      const files = Array.from(input.files)
+      let clutter = ``
+      files.forEach(element => {
+        clutter += `
+          <div class="img w-36 h-48 bg-zinc-300">
+                      <img class="w-full h-full objec-cover" src="${URL.createObjectURL(element)}" alt="">
+                    </div>
+          `
+      });
+      document.querySelector('.image-container').innerHTML = clutter
+
+    }
+
+    function deleteItem(elem,productId){
+      fetch(`/delete/${productId}`)
+      .then(raw => raw.json())
+      .then()
+      elem.parentNode.parentNode.removeChild(elem.parentNode.parentNode.querySelector(`#prod${productId}`))
+    }
+
+  </script>
+
+  <%include ./partials/footer.ejs%>

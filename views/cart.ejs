@@ -1,0 +1,95 @@
+<%include ./partials/header.ejs%>
+<section class="h-full px-16 py-10 w-full flex flex-col-reverse md:flex-row gap-2 justify-between relative">
+    <div class="bg-white w-3/5 w-full h-full scrollbar px-6  relative">
+        <div class="prod-header w-full flex items-center border-b mb-4 py-4 pr-6">
+            <h4 class="w-3/6">Product detail</h4>
+            <h4 class="w-1/6 text-right ">Quantity</h4>
+            <h4 class="w-1/6 text-right ">Price</h4>
+        </div>
+        <div class="cart-prods mb-6 h-full w-full h-96 scrollbar">
+            <%cartItems.forEach(cartItem=>{%>
+            <div id="cartItem<%=cartItem._id%>" class="prod px-2 py-2 pr-6 w-full rounded-lg cursor-pointer hover:shadow-md flex items-center mb-2">
+                <div class="w-3/6 item flex gap-4">
+                    <div class="img w-20 h-28 shrink-0 bg-white flex items-center justify-center">
+                        <img class="object-contain h-full" src="/images/uploads/<%=cartItem.product.images[0]%>" alt="">
+                    </div>
+                    <div class="dets h-28 justify-between flex flex-col">
+                        <div class="">
+                            <h1 class="leading-[1] mb-1.5 line-clamp-2 font-medium w-[70%]"><%=cartItem.product.description%></h1>
+                            <h4 class="leading-[1] text-sm"><%=cartItem.product.brand%></h4>
+                        </div>
+                        <h4 onclick="removeFromCart(this,'<%=cartItem._id%>')" class="leading-[1] text-xs border-b-2 w-max uppercase mb-2 text-zinc-400" >remove</h4>
+                    </div>
+                </div>
+                <div class="w-1/6 justify-end flex items-center gap-2">
+                    <i onclick="decreaseQty(this,'<%=cartItem._id%>')" class="ri-subtract-line transition-all duration-300 hover:bg-zinc-100 px-1 rounded-full text-xs sub"></i>
+                    <input class="qnty border-2 text-center outline-none rounded-md w-8" min="1" max="5" value="<%=cartItem.quantity%>" type="number">
+                    <i onclick="increaseQty(this,'<%=cartItem._id%>')" class="ri-add-line transition-all duration-300 hover:bg-zinc-100 px-1 rounded-full text-xs"></i>
+                </div>
+                <h4 class="w-1/6 text-right ">₹<span><%=cartItem.product.discountprice%></span> <s class="text-xs opacity-50">₹<%=cartItem.product.price%></s> </h4>
+            </div>
+            <%})%>
+        </div>
+
+    </div>
+    <div class="order-sum bg-white sticky top-0 h-max w-2/5 p-6 md:shadow-md">
+        <h1 class=" text-md border-b-2 pb-2 opacity-50 uppercase font-semibold mb-6">Price details</h1>
+        <div class="flex w-full py-1 px-3 items-center justify-between mb-1">
+            <h4 class="">Price(<%=cartItems.length%> items)</h4>
+            <h4>₹<span><%=oldprice%></span></h4>
+        </div>
+        <div class="flex w-full py-1 px-3 items-center justify-between mb-1">
+            <h4 class="">Discount</h4>
+            <h4 class="text-emerald-700">- ₹<span><%=oldprice-actualprice%></span></h4>
+        </div>
+        <div class="flex w-full py-1 px-3 items-center justify-between mb-1">
+            <h4 class="">Shipping</h4>
+            <h4><s class="text-sm opacity-50 mr-1">₹500</s><span class="text-emerald-700">Free</span></h4>
+        </div>
+        <div class="flex w-full font-medium py-1 px-3 items-center justify-between mb-1">
+            <h4 class="">Total cost</h4>
+            <h4>₹<span><%=actualprice%></span></h4>
+        </div>
+           <a href="/checkout"> <button class="text-white mt-6 mx-auto text-center transition-all duration-300 hover:border-transparent bg-blue-700 hover:bg-[#2550aa] py-2  font-medium border border-zinc-300 rounded-md w-full block uppercase" >Place Order</button>
+           </a>
+    </div>
+    
+</section>  
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js" integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    function removeFromCart(elem,productId){
+        document.querySelector(".cart-prods").removeChild(document.querySelector(`#cartItem${productId}`));
+        fetch(`/cart/remove/${productId}`)           
+    }
+
+    function decreaseQty(elem, cartId){
+        let inp = elem.parentNode.querySelector('input')
+        if(inp.value>1){
+            inp.value-=1
+
+            axios.post(`/cart/decrease/${cartId}`)
+            
+            
+        }else(
+            alert("Min qty 1.")
+            )
+        }
+        function increaseQty(elem, cartId){
+            let inp = elem.parentNode.querySelector('input')
+            let val = inp.value
+            if(inp.value<5){
+                val++
+                console.log(val)
+                inp.value = val
+                axios.post(`/cart/increase/${cartId}`)
+        }else{
+            alert("Max qty 5.")
+        }
+    }
+
+</script>
+
+
+<%include ./partials/footer.ejs%>

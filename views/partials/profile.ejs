@@ -1,0 +1,47 @@
+<div class="left w-1/4 h-full sticky top-0">
+    <div class="profile relative h-20 bg-white flex items-center gap-3 px-4 py-2 border-b-4">
+        <div class="img bg-[#fafafa] rounded-full w-12 aspect-square overflow-hidden">
+            <img class="w-full h-full object-cover" src="https://t4.ftcdn.net/jpg/03/21/50/43/360_F_321504390_lmypBSDF4Msvt4409J692GiAlK6uVRi6.jpg" alt="">
+        </div>
+        <div class="">
+            <h4>Hello,</h4>
+            <h1><%=loggedUser.username%></h1>
+        </div>
+        <div class="status absolute top-2 right-2 text-emerald-600 text-xs border-b font-medium"><%=loggedUser.acctype%></div>
+    </div>
+    <div class="others bg-white flex-1">
+        
+        <a href="/account"><div class="flex w-full hover:bg-zinc-100 cursor-pointer px-3 py-2 items-center gap-3">
+            <i class="ri-pencil-line text-lg"></i>
+            <h4 class="text-md">Account</h4>
+        </div></a>
+        <a href="/account/orders"><div class="flex w-full hover:bg-zinc-100 cursor-pointer px-3 py-2 items-center gap-3">
+            <i class="ri-store-3-line text-lg"></i>
+            <h4 class="text-md">Orders</h4>
+        </div></a>
+        <a href="/account/wishlist"><div class="flex w-full hover:bg-zinc-100 cursor-pointer px-3 py-2 items-center gap-3">
+            <i class="ri-heart-line text-lg"></i>
+            <h4 class="text-md">Wishlist</h4>
+        </div></a>
+        <a href="/account/addresses"><div class="flex w-full hover:bg-zinc-100 cursor-pointer px-3 py-2 items-center gap-3 relative">
+            <i class="ri-home-2-line text-lg"></i>
+            <h4 class="text-md">Manage Addresses</h4>
+            <%if(!loggedUser.address.street){%>
+                <i class="ri-error-warning-fill text-red-600 absolute right-4 top-1/2 -translate-y-1/2"></i>
+                <%}%>
+        </div></a>
+        
+        <a href="/logout"><div class="flex w-full hover:bg-[#e8dacc] cursor-pointer px-3 py-2 items-center gap-3">
+            <i class="ri-logout-box-line text-lg"></i>
+            <h4 class="text-md">Logout</h4>
+        </div></a>
+    </div>
+    <%if(loggedUser.acctype === 'seller'){%>
+        <a href="/sales"><div class="flex mt-4 border text-white border-blue-700  w-full hover:bg-indigo-800 bg-blue-700 cursor-pointer px-3 py-2 items-center gap-3 relative">
+            <i class="ri-shake-hands-line text-lg font-semibold"></i>
+            <h4 class="text-md font-semibold">Sell & sales</h4>
+            
+        </div></a>
+    <%}%>
+
+</div>

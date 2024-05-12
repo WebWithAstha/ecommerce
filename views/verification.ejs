@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Disable number input spinners */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div id="main" class="w-screen h-screen bg-[#fafafa] flex flex-col gap-4 py-10 items-center justify-center">
+
+    <div class="box w-96 h-full bg-white  flex flex-col gap-4 items-center justify-center px-8">
+      <h1 class="font-semibold text-2xl mb-2">Please Enter OTP</h1>
+      <p class="text-center w-[90%]">Your One Time Password (OTP) has been sent via mail to your registered email</p>
+      <div class=" rounded px-8 pt-6 pb-8 mb-4 w-max left-10 top-10">
+        <div class="flex items-center justify-center">
+          <input name="digit1"
+            class="shadow text-center appearance-none border rounded w-12 aspect-square shrink-0 p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+            id="otp1" type="number" value="1" inputmode="numeric" min="0" max="9"/>
+          <input name="digit2"
+            class="shadow text-center appearance-none border rounded w-12 aspect-square shrink-0 p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+            id="otp2" type="number" value="1" inputmode="numeric" min="0" max="9"/>
+          <input name="digit3"
+            class="shadow text-center appearance-none border rounded w-12 aspect-square shrink-0 p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+            id="otp3" type="number" value="1" inputmode="numeric" min="0" max="9"/>
+          <input name="digit4"
+            class="shadow text-center appearance-none border rounded w-12 aspect-square shrink-0 p-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+            id="otp4" type="number" value="1" inputmode="numeric" min="0" max="9"/>
+        </div>
+
+        <div class="flex items-center gap-2 w-full mt-6">
+          <div id="resendBtn"
+            class="btn bg-[#808080] cursor-pointer text-white font-medium px-4 py-1 rounded-md w-1/2 text-center">Resend
+          </div>
+          <div onclick="verifyOtp(this)" id="verifyBtn"
+            class="btn bg-indigo-800 cursor-pointer text-white font-medium px-4 py-1 rounded-md w-1/2 text-center">
+            Verify</div>
+        </div>
+
+
+
+        <p class="text-center text-xs mt-4">resend otp in <span id="countdown">0</span> seconds</p>
+        <!-- <input type="submit" value="Verify" class="bg-indigo-800 cursor-pointer text-white font-medium px-4 py-1 rounded-md mt-8 block mx-auto " name="" id=""> -->
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"
+    integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+
+    function startCountDown() {
+      let count = 60
+      let interval = setInterval(function () {
+        if (count === 0) {
+          clearInterval(interval)
+          document.querySelector('#resendBtn').style.backgroundColor = "#3730a3"
+          document.querySelector('#resendBtn').addEventListener('click', function () {
+            resendOtp(this)
+            startCountDown()
+          })
+        }
+        document.querySelector('#countdown').innerHTML = count
+        count--
+
+      }, 100)
+    }
+    startCountDown()
+
+    function resendOtp(btn) {
+      btn.style.backgroundColor = "gray"
+      axios.post('/resend/otp')
+    }
+
+    function verifyOtp(element) {
+
+        axios.post('/account/verify', {
+            o1: element.parentNode.parentNode.querySelector('#otp1').value,
+            o2: element.parentNode.parentNode.querySelector('#otp2').value,
+            o3: element.parentNode.parentNode.querySelector('#otp3').value,
+            o4: element.parentNode.parentNode.querySelector('#otp4').value
+        })
+       .then(function (response) {
+        if(response.data.message === "OTP Expired"){
+          alert("OTP has expired. Please click resend.")
+        }else{
+          if(response.data.status){
+            document.querySelector(".box").innerHTML = `<h1 class="text-lg font-bold">Hurray!! you are verified <i class="ri-checkbox-circle-fill text-green-700"></i></h1>`
+            location.href="/home"
+          }else{
+            alert("oops! incorrect OTP. Reenter or Click resend.")
+          }
+        }
+       })
+    }
+
+
+  </script>
+</body>
+
+</html>
