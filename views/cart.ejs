@@ -7,7 +7,7 @@
             <h4 class="w-1/6 text-right ">Price</h4>
         </div>
         <div class="cart-prods mb-6 h-full w-full h-96 scrollbar">
-            <%cartItems.forEach(cartItem=>{%>
+            <%cart.products.forEach(cartItem=>{%>
             <div id="cartItem<%=cartItem._id%>" class="prod px-2 py-2 pr-6 w-full rounded-lg cursor-pointer hover:shadow-md flex items-center mb-2">
                 <div class="w-3/6 item flex gap-4">
                     <div class="img w-20 h-28 shrink-0 bg-white flex items-center justify-center">
@@ -35,12 +35,12 @@
     <div class="order-sum bg-white sticky top-0 h-max w-2/5 p-6 md:shadow-md">
         <h1 class=" text-md border-b-2 pb-2 opacity-50 uppercase font-semibold mb-6">Price details</h1>
         <div class="flex w-full py-1 px-3 items-center justify-between mb-1">
-            <h4 class="">Price(<%=cartItems.length%> items)</h4>
-            <h4>₹<span><%=oldprice%></span></h4>
+            <h4 class="">Price(<%=cart.products.length%> items)</h4>
+            <h4>₹<span><%=cart.price%></span></h4>
         </div>
         <div class="flex w-full py-1 px-3 items-center justify-between mb-1">
             <h4 class="">Discount</h4>
-            <h4 class="text-emerald-700">- ₹<span><%=oldprice-actualprice%></span></h4>
+            <h4 class="text-emerald-700">- ₹<span><%=cart.price%></span></h4>
         </div>
         <div class="flex w-full py-1 px-3 items-center justify-between mb-1">
             <h4 class="">Shipping</h4>
@@ -48,7 +48,7 @@
         </div>
         <div class="flex w-full font-medium py-1 px-3 items-center justify-between mb-1">
             <h4 class="">Total cost</h4>
-            <h4>₹<span><%=actualprice%></span></h4>
+            <h4>₹<span><%=cart.price%></span></h4>
         </div>
            <a href="/checkout"> <button class="text-white mt-6 mx-auto text-center transition-all duration-300 hover:border-transparent bg-blue-700 hover:bg-[#2550aa] py-2  font-medium border border-zinc-300 rounded-md w-full block uppercase" >Place Order</button>
            </a>

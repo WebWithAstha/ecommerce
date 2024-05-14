@@ -5,11 +5,14 @@ const cartSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId ,
         ref: 'user',
     },
-    products:[{
+    product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'cartProduct',
-    }],
-    price:Number
+        ref: 'product',
+    },
+    quantity: {
+        type: Number,
+        default: 1
+    }
 })
 
-module.exports = mongoose.model('cart', cartSchema)
+module.exports = mongoose.model('cartProduct', cartSchema)
