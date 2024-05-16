@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const userModel = require('../models/users.js')
 const otpModel = require('../models/otp.js')
+
 const localStrategy = require('passport-local')
+const passport = require('passport');
 passport.use(new localStrategy(userModel.authenticate()))
 
 const sendmailController = require('../controllers/sendmail_controller.js')

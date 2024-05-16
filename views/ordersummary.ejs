@@ -5,7 +5,7 @@
             <div class="flex justify-between mb-6  border-b-2 pb-2 items-center">
                 <h1 class="text-md opacity-50 uppercase font-semibold">Order Summary</h1>
                 <h4>₹<span>
-                        <%=totalPrice%>
+                        <%=cartItems.price%>
                     </span></h4>
             </div>
             <h1 class="  mb-6">Order Summary</h1>
@@ -36,6 +36,20 @@
                         >Procced to pay</button>
 
         </div>
+
+        <div class="overlay hidden w-full h-full fixed  top-0 left-0 backdrop-blur-sm flex justify-center items-center">
+
+            <div class="w-96 p-4 text-center shadow-md bg-zinc-100">
+                <h4 class="text-red-600 mb-2">Reminder</h4>
+    
+                <p>Complete your address before checkout for smooth delivery! Happy shopping!</p>
+                <div class="flex mt-4 gap-1">
+                    <button class="w-1/2 text-center bg-zinc-200 p-2 font-medium hover:bg-zinc-300 transition-all duration-300 text-sm rounded-md">CANCEL</button>
+                    <a class="w-1/2" href="/account/addresses"><button class="w-full text-center bg-blue-500 text-white p-2 font-medium hover:bg-blue-600 transition-all duration-300 text-sm rounded-md">MANAGE</button></a>
+                </div>
+            </div>
+        </div>
+
 
     </section>
 
@@ -73,7 +87,7 @@
                 }
                 console.log("clicked to send mail")
                 axios.post('/confirm/order', {
-                    totalAmount: '<%=totalPrice%>'
+                    totalAmount: '<%=cartItems.price%>'
 
                 })
             })
@@ -92,7 +106,8 @@
                         "Content-Type": "application/json"
                     },
                     "data": JSON.stringify({
-                        "amount": `<%=totalPrice*100%>`
+                        "amount": `<%=cartItems.price*100%>`,
+                        "products":`<%=cartItems.products%>`
                     }),
                 };
 
@@ -102,7 +117,7 @@
 
                     var options = {
                         "key": "rzp_test_t6kU4d1qeTuail", // Enter the Key ID generated from the Dashboard
-                        "amount": `<%=totalPrice*100%>`, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                        "amount": `<%=cartItems.price*100%>`, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
                         "currency": "INR",
                         "name": "Flip",
                         "description": "Order Transaction",

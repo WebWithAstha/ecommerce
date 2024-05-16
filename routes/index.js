@@ -38,6 +38,8 @@ router.post('/sendmail', sendmailController.sendmail);
 // ------------------------------ razorpay
 
 router.post('/create/orderId', isLoggedIn, async function (req, res, next) {
+  const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
+
   var options = {
     amount: req.body.amount,  // amount in the smallest currency unit
     currency: "INR",
@@ -47,7 +49,6 @@ router.post('/create/orderId', isLoggedIn, async function (req, res, next) {
     console.log(order);
     res.send(order)
   });
-
 })
 router.post('/api/payment/verify', isLoggedIn, async function (req, res, next) {
   var { validatePaymentVerification, validateWebhookSignature } = require('../node_modules/razorpay/dist/utils/razorpay-utils.js');
@@ -96,13 +97,8 @@ router.get('/sales', isLoggedIn, async function (req, res, next) {
 
 router.get('/checkout', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
-  const cartItems = await cartModel.find({ user: loggedUser._id }).populate('product')
-  let totalPrice = 0, oldprice = 0
-  cartItems.forEach(prod => {
-    totalPrice += prod.product.discountprice * prod.quantity
-    oldprice += prod.product.price * prod.quantity
-  })
-  res.render('ordersummary', { loggedUser, cartItems, totalPrice, oldprice });
+  const cartItems = await cartModel.findOne({ user: loggedUser._id }).populate('products')
+  res.render('ordersummary', { loggedUser, cartItems });
 });
 
 router.get('/product/:productId', isLoggedIn, async function (req, res, next) {
