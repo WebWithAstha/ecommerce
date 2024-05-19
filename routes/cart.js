@@ -25,10 +25,12 @@ router.get('/add/:productId', isLoggedIn, async function (req, res, next) {
     })
     const cart = await cartModel.findOne({ user: loggedUser._id })
     if (cart) {
+        // updating existing cart
         cart.products.push(cartProduct._id)
         cart.price+=product.discountprice
         await cart.save()
     } else {
+        // creating new cart
         await cartModel.create({
             user: loggedUser._id,
             products: [cartProduct._id],

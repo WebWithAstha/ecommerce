@@ -40,9 +40,20 @@
             </div>
             <div class="flex gap-2">
 
-                <button onclick="addAndGoToCart(this,'<%=product._id%>')"
-                    class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-500 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">Add
-                    to Cart</button>
+                <%if(inCart){%>
+                    <a href="/cart">
+                    <button
+                        class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-500 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">
+                        Go to Cart
+                    </button>
+                </a>
+                    <%}else{%>
+                        <button onclick="addAndGoToCart(this,'<%=product._id%>','<%=inCart%>')"
+                            class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-500 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">
+                            Add to Cart
+                        </button>
+                    <%}%>
+
                 <a href="#"
                     class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-700 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">
                     <button>Buy now</button>
@@ -63,18 +74,18 @@
             elem.parentNode.parentNode.querySelector("#mainImg img").src = `/images/uploads/${img}`
         }
 
-        function addAndGoToCart(elem,productId){
+        function addAndGoToCart(elem, productId, inCart) {
             elem.classList.toggle('bg-blue-500')
             elem.classList.toggle('hover:bg-[#2550aa]')
             elem.classList.toggle('bg-zinc-500')
             elem.textContent = 'Going to Cart'
             fetch(`/cart/add/${productId}`)
-            .then(raw=>raw.json())
-            .then(response=>{
-                setTimeout(()=>{
-                    window.location.href='/cart'
-                },1000)
-            })
+                .then(raw => raw.json())
+                .then(response => {
+                    setTimeout(() => {
+                        window.location.href = '/cart'
+                    }, 1000)
+                })
         }
 
     </script>

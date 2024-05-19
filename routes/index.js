@@ -4,18 +4,21 @@ const passport = require('passport');
 const userModel = require('../models/users.js')
 const productModel = require('../models/product.js')
 const cartModel = require('../models/cart.js')
+const cartProductModel = require('../models/cartProduct.js')
 const orderModel = require('../models/order.js')
 const otpModel = require('../models/otp.js')
 const upload = require('./multer.js')
 const fs = require('fs')
 const productController = require('../controllers/product_controller.js')
 const sendmailController = require('../controllers/sendmail_controller.js')
-const {isLoggedIn}= require('../middlewares/loggedIn_middleware.js')
+const { isLoggedIn } = require('../middlewares/loggedIn_middleware.js')
 
-const Razorpay = require('razorpay')
+
+const Razorpay = require('razorpay');
+const cartProduct = require('../models/cartProduct.js');
 const instance = new Razorpay({
-  key_id: 'rzp_test_t6kU4d1qeTuail',
-  key_secret: '6jVxQIpidlsiVxxQ8ghm9bi2',
+  key_id: process.env.RAZOR_ID,
+  key_secret: process.env.RAZOR_SECRET,
 });
 
 
@@ -37,22 +40,47 @@ router.post('/sendmail', sendmailController.sendmail);
 
 // ------------------------------ razorpay
 
-router.post('/create/orderId', isLoggedIn, async function (req, res, next) {
+router.post('/create/orderId', async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
+  const cart = await cartModel.findOne({ user: loggedUser._id })
 
   var options = {
-    amount: req.body.amount,  // amount in the smallest currency unit
+    amount: cart.price * 100,  // amount in the smallest currency unit
     currency: "INR",
-    receipt: "order_rcptid_11"
+    receipt: 'order_rcptid_' + cart._id.toString().slice(0, 5)
   };
   instance.orders.create(options, function (err, order) {
-    console.log(order);
-    res.send(order)
+    res.json(order);
   });
 })
+
 router.post('/api/payment/verify', isLoggedIn, async function (req, res, next) {
   var { validatePaymentVerification, validateWebhookSignature } = require('../node_modules/razorpay/dist/utils/razorpay-utils.js');
-  const isVerified= validatePaymentVerification({ "order_id": req.body.handlerresponse.razorpay_order_id, "payment_id": req.body.handlerresponse.razorpay_payment_id }, req.body.handlerresponse.razorpay_signature, '6jVxQIpidlsiVxxQ8ghm9bi2');
+
+  const isVerified = validatePaymentVerification({ "order_id": req.body.handlerresponse.razorpay_order_id, "payment_id": req.body.handlerresponse.razorpay_payment_id }, req.body.handlerresponse.razorpay_signature, process.env.RAZOR_SECRET);
+  if (isVerified) {
+    const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
+    const cart = await cartModel.findOne({ user: loggedUser._id }).populate({ path: 'products', populate: 'product' })
+    let quantity = 0;
+    for (let i = 0; i < cart.products.length; i++) {
+      quantity += cart.products[i].quantity;
+    }
+    const order = await orderModel.create({
+      amount: cart.price,
+      quantity,
+      buyer: loggedUser._id,
+      items: cart.products.map(cartProduct => ({ product: cartProduct.product._id, quantity: cartProduct.quantity })),
+    })
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: loggedUser.email,
+      subject: "Order placed successfully",
+      html: `Hello ${loggedUser.username}, </br>Thanks for shopping with Ecomm, your orderId is ${'order_' + order._id.toString().slice(0, 4)}.`
+    }
+    await sendmailController.sendmail(mailOptions)
+    await cartModel.findOneAndDelete({ user: loggedUser._id })
+  }
+
   res.status(200).json(isVerified)
 
 })
@@ -70,7 +98,7 @@ router.post('/resend/otp', isLoggedIn, async function (req, res, next) {
     subject: "Account Verification",
     html: `Hello ${loggedUser.username}, </br> <b>${otp}</b> is the OTP for your account verification and will expire in next 1 minute.`
   }
-  await sendmailController.sendmail(req, res, mailOptions)
+  await sendmailController.sendmail(mailOptions)
   await otpModel.deleteMany({ user: loggedUser._id })
   await otpModel.create({
     user: loggedUser._id,
@@ -97,14 +125,15 @@ router.get('/sales', isLoggedIn, async function (req, res, next) {
 
 router.get('/checkout', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
-  const cartItems = await cartModel.findOne({ user: loggedUser._id }).populate('products')
-  res.render('ordersummary', { loggedUser, cartItems });
+  const cart = await cartModel.findOne({ user: loggedUser._id }).populate('products')
+  res.render('ordersummary', { loggedUser, cart });
 });
 
 router.get('/product/:productId', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
   const product = await productModel.findOne({ _id: req.params.productId })
-  res.render('product', { loggedUser, product });
+  const inCart= await cartProductModel.findOne({product:product._id})?true:false;
+  res.render('product', { loggedUser, product,inCart });
 });
 
 router.post('/upload/product', isLoggedIn, upload.array('images', 4), async function (req, res, next) {
@@ -154,7 +183,6 @@ router.post('/update/address', isLoggedIn, async function (req, res) {
 router.post('/addToWishlist/:productId', isLoggedIn, async function (req, res) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
   const product = await productModel.findOne({ _id: req.params.productId })
-  console.log(product)
   if (loggedUser.wishlist.indexOf(product._id) === -1) {
     loggedUser.wishlist.push(product._id)
   } else {
@@ -166,20 +194,26 @@ router.post('/addToWishlist/:productId', isLoggedIn, async function (req, res) {
 
 router.post('/confirm/order', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
-  const cartItems = await cartModel.find({ user: loggedUser._id })
-  const order = await orderModel.create({
-    amount: req.body.totalAmount,
-    quantity: cartItems.length,
-    buyer: loggedUser._id,
-    items: cartItems.map(cartItem => cartItem),
-  })
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: loggedUser.email,
-    subject: "Ecomm orders!!",
-    html: `Hurray ${loggedUser.username}! Your order od${order._id} for Rs. ${order.amount} has been confirmed.<br> Thanks for Shopping.`
-  }
-  await sendmailController.sendmail(req, res, mailOptions)
+    const cart = await cartModel.findOne({ user: loggedUser._id }).populate({ path: 'products', populate: 'product' })
+    let quantity = 0;
+    for (let i = 0; i < cart.products.length; i++) {
+      quantity += cart.products[i].quantity;
+    }
+    const order = await orderModel.create({
+      amount: cart.price,
+      quantity,
+      buyer: loggedUser._id,
+      items: cart.products.map(cartProduct => ({ product: cartProduct.product._id, quantity: cartProduct.quantity })),
+    })
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: loggedUser.email,
+      subject: "Order placed successfully",
+      html: `Hello ${loggedUser.username}, </br>Thanks for shopping with Ecomm, your orderId is ${'order_' + order._id.toString().slice(0, 4)}.`
+    }
+    await sendmailController.sendmail(mailOptions)
+    await cartModel.findOneAndDelete({ user: loggedUser._id })
+  res.status(200).json("order placed successfully")
 });
 
 

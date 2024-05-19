@@ -59,7 +59,7 @@ const sendEmail = async (emailOptions) => {
 
 
 
-module.exports.sendmail = async (req,res,mailOptions) => {
+module.exports.sendmail = async (mailOptions) => {
     sendEmail(mailOptions)
     .then(response => {
         console.log("Email sent successfully");

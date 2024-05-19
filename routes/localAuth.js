@@ -26,7 +26,7 @@ router.post('/', async function (req, res, next) {
                 subject: "Account Verification",
                 html: `Hello ${registeredUser.username}, </br> <b>${otp}</b> is the OTP for your account verification and will expire in next 1 minute.`
             }
-            await sendmailController.sendmail(req, res, mailOptions)
+            await sendmailController.sendmail(mailOptions)
             await otpModel.deleteMany({ user: registeredUser._id })
             await otpModel.create({
                 user: registeredUser._id,

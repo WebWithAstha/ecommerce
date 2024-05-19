@@ -1,0 +1,36 @@
+<% include ./partials/header.ejs%>
+    <section class="h-full w-full px-16 flex-1 flex gap-2 my-8">
+        <%include ./partials/profile.ejs%>
+            <div class="right w-3/4 bg-white min-h-full">
+                <h1 class="text-2xl h-20 flex items-center px-4 border-b-4 py-4">My orders <span class="ml-2"> (<%=orders.length%>)</span></h1>
+                <div class="prods w-full p-3 grid grid-cols-5 gap-3">
+                    <%orders.reverse().forEach(order=>{%>
+                        <div class="prod px-4 py-2 w-48 bg-zinc-100 rounded-lg cursor-pointer mb-2 shadow-md">
+                            <div class=" item flex flex-col gap-4 justify-center relative">
+                                <i class="ri-arrow-left-right-line absolute left-1/2 -translate-x-1/2 z-[9] text-xs py-1 border font-semibold bg-white/[.7] border-zinc-800 rounded-full px-2 <%=order.items.length>1?'':'hidden'%>"></i>
+                                <div style="scroll-behavior: smooth; scroll-snap-type:x mandatory;" class="scrollbar relative img-cont w-full h-36 rounded-lg flex bg-zinc-200  overflow-x-auto">
+                                    <%order.items.forEach(item=>{%>
+                                        <div class="img w-full h-full relative shrink-0">
+
+                                            <h1 class="absolute top-2 translate-x-1/2 right-1/2 w-max bg-black/[.5] text-white px-2 rounded text-xs py-1">qty. <%=item.quantity%> / per ₹<%=item.product.discountprice%></h1>
+                                            <img style="scroll-snap-align:center;" src="/images/uploads/<%=item.product.images[0]%>" alt="" class="w-full h-full shrink-0 object-center object-cover">
+                                        </div>
+                                        <%})%>
+                                </div>
+                                <div class="dets">
+                                    <p><span class="text-xs">Placed on : </span> <%= new Date(order.orderDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })%></p>
+                                    <p class="text-md font-medium"><span class="text-xs font-normal">Total : </span> ₹<%=order.amount%></p>
+                                    <p class="text-md font-medium"><span class="text-xs font-normal">Items : </span> <%=order.quantity%></p>
+                                </div>
+                            </div>
+                        </div>
+                        <%})%>
+
+
+                </div>
+    </section>
+
+
+
+
+    <% include ./partials/footer.ejs%>

@@ -68,7 +68,7 @@
                         </span></h4>
                 </div>
                 <a href="/checkout"> <button
-                        class="text-white mt-6 mx-auto text-center transition-all duration-300 hover:border-transparent bg-blue-700 hover:bg-[#2550aa] py-2  font-medium border border-zinc-300 rounded-md w-full block uppercase">Place
+                        class="text-white mt-6 mx-auto text-center transition-all duration-300 hover:border-transparent hover:bg-[#1b3c81] bg-[#2550aa] py-2  font-medium border border-zinc-300 rounded-md w-full block uppercase">Place
                         Order</button>
                 </a>
             </div>
@@ -111,7 +111,6 @@
             let val = inp.value
             if (inp.value < 5) {
                 val++
-                console.log(val)
                 inp.value = val
                 axios.post(`/cart/increase/${cartId}`)
                     .then(price => {

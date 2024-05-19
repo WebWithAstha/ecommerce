@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userModel = require('../models/users')
 const otpModel = require('../models/otp')
+const orderModel = require('../models/order')
 
 const {isLoggedIn}= require('../middlewares/loggedIn_middleware.js')
 
@@ -11,7 +12,8 @@ router.get('/', isLoggedIn, async function (req, res, next) {
 });
 router.get('/orders', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
-  res.render('sellerorders', { loggedUser });
+  const orders = await orderModel.find({buyer:loggedUser._id}).populate('items.product')
+  res.render('myorders', { loggedUser,orders });
 });
 router.get('/wishlist', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username }).populate('wishlist')

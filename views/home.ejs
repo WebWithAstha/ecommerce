@@ -16,7 +16,7 @@
                         <i onclick="scrollToLeft(this)"
                             class="prod-arrow go-left hidden rounded-full px-2 py-1 absolute left-2 w-max top-1/2 pointer-events-auto left-0 text-xl shadow-xl bg-zinc-100 ri-arrow-left-s-line"></i>
                         <i onclick="scrollToRight(this)"
-                            class="prod-arrow go-right rounded-full px-2 py-1 absolute right-2 w-max top-1/2 pointer-events-auto right-0 text-xl shadow-xl bg-zinc-100 ri-arrow-right-s-line"></i>
+                            class="prod-arrow go-right hidden rounded-full px-2 py-1 absolute right-2 w-max top-1/2 pointer-events-auto right-0 text-xl shadow-xl bg-zinc-100 ri-arrow-right-s-line"></i>
                     </div>
                     <div onscroll="hideScrollNavigators(this)" class="prods flex justify-start scrollbar gap-5 px-1 overflow-x-auto mx-6 py-2 relative">
                         <%productByCategory[category].forEach(product=>{%>
@@ -31,8 +31,7 @@
                                         alt="Product Image">
                                 </div>
                                 <div class="p-4 prod-details">
-                                    <h2 class="text-xl font-semibold mb-2 truncate">Product Name Lorem ipsum dolor sit amet.
-                                    </h2>
+                                    <h2 class="text-xl font-semibold mb-2 truncate"><%=product.name%></h2>
                                     <div class="flex w-full gap-2 items-center">
                                         <div
                                             class="flex items-center text-xs py-1 gap-1 bg-emerald-700 text-white w-max px-2 rounded-md">
@@ -86,7 +85,7 @@
         
         function hideScrollNavigators(elem) {
             let scrollLeftIcon = elem.parentNode.querySelector('.go-left');
-            let scrollRightIcon = elem.parentNode.querySelector('.go-right');
+            let scrollRightIcon = elem.parentNode.querySelector('.go-right hidden');
             if (elem.scrollLeft > 0) {
                 scrollLeftIcon.style.display = 'block';
             } else {
@@ -101,7 +100,6 @@
         
         function scrollToLeft(elem) {
             let scrollContainer = elem.parentNode.parentNode.querySelector('.prods')
-            console.log(scrollContainer)
             scrollContainer.scrollBy({
                 left: -250,
                 behavior: 'smooth'

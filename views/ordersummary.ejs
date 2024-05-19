@@ -5,7 +5,7 @@
             <div class="flex justify-between mb-6  border-b-2 pb-2 items-center">
                 <h1 class="text-md opacity-50 uppercase font-semibold">Order Summary</h1>
                 <h4>₹<span>
-                        <%=cartItems.price%>
+                        <%=cart.price%>
                     </span></h4>
             </div>
             <h1 class="  mb-6">Order Summary</h1>
@@ -22,33 +22,22 @@
             <%}%>
             <h2 class="text-md font-medium mb-2">Payment Via</h2>
             <div class="flex items-center gap-1 mb-2">
-                <input onclick="selectPaymentMethod(this)" id="payonline" checked type="radio">
+                <input onclick="selectPaymentMethod(this,'<%=loggedUser.address.street%>')" id="payonline" checked type="radio">
                 <h4>Online</h4>
             </div>
             <div class="flex items-center gap-1 mb-2">
-                <input onclick="selectPaymentMethod(this)" id="paycash" type="radio">
+                <input onclick="selectPaymentMethod(this,'<%=loggedUser.address.street%>')" id="paycash" type="radio">
                 <h4>Cash on delivery</h4>
             </div>
             <p class="text-sm opacity-70 mb-4" >Order confirmation email will be sent to <%=loggedUser.email%>.</p>
-            <button onclick="handleOrder(this,' <%=loggedUser.address.street%>')" id="rzp-button1" class="orderbtn
-                        text-white text-center transition-all duration-300 hover:border-transparent bg-blue-700
-                        hover:bg-[#2550aa] py-2 font-medium border border-zinc-300 text-sm rounded-md px-3 uppercase"
+            <button id="orderbtn" class="orderbtn
+                        text-white text-center transition-all duration-300 hover:border-transparent hover:bg-[#1b3c81] bg-[#2550aa] py-2 font-medium border border-zinc-300 text-sm rounded-md px-3 uppercase"
                         >Procced to pay</button>
 
+
         </div>
 
-        <div class="overlay hidden w-full h-full fixed  top-0 left-0 backdrop-blur-sm flex justify-center items-center">
 
-            <div class="w-96 p-4 text-center shadow-md bg-zinc-100">
-                <h4 class="text-red-600 mb-2">Reminder</h4>
-    
-                <p>Complete your address before checkout for smooth delivery! Happy shopping!</p>
-                <div class="flex mt-4 gap-1">
-                    <button class="w-1/2 text-center bg-zinc-200 p-2 font-medium hover:bg-zinc-300 transition-all duration-300 text-sm rounded-md">CANCEL</button>
-                    <a class="w-1/2" href="/account/addresses"><button class="w-full text-center bg-blue-500 text-white p-2 font-medium hover:bg-blue-600 transition-all duration-300 text-sm rounded-md">MANAGE</button></a>
-                </div>
-            </div>
-        </div>
 
 
     </section>
@@ -59,44 +48,92 @@
         integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
 
-        if (!'<%=loggedUser.address.street%>') {
-            alert("please complete address before proceeding further.")
+        function createReminderPanel() {
+            let reminderPanel = document.createElement("div")
+            reminderPanel.id = "reminderPanel"
+            reminderPanel.className = "overlay w-full h-full fixed top-0 left-0 backdrop-blur-sm flex justify-center items-center"
+            reminderPanel.innerHTML = `
+                <div class="w-96 p-4 text-center shadow-md bg-zinc-100">
+                <h4 class="text-red-600 mb-2">Reminder</h4>
+    
+                <p>Complete your ADDRESS before checkout for smooth delivery! Happy shopping!</p>
+                <div class="flex mt-4 gap-1">
+                    <button onclick="removeReminderPanel()" id="removeReminderBtn" class="w-1/2 text-center bg-zinc-200 p-2 font-medium hover:bg-zinc-300 transition-all duration-300 text-sm rounded-md">CANCEL</button>
+                    <a class="w-1/2" href="/account/addresses"><button class="w-full text-center bg-blue-500 text-white p-2 font-medium hover:bg-blue-600 transition-all duration-300 text-sm rounded-md">MANAGE</button></a>
+                </div>
+            </div>
+            `
+            document.querySelector(' section').appendChild(reminderPanel)
+        } function removeReminderPanel() {
+            document.querySelector('#reminderPanel') ?
+                document.querySelector('section').removeChild(document.querySelector('#reminderPanel')) : ''
+        }
+        function OderPlacedPanel() {
+            let orderPanel = document.createElement("div")
+            orderPanel.id = "orderPanel"
+            orderPanel.className = "overlay w-full h-full fixed top-0 left-0 backdrop-blur-sm flex justify-center items-center"
+            orderPanel.innerHTML = ` <div class="w-96 p-4 text-center shadow-md bg-zinc-100">
+                        <i class="ri-verified-badge-fill text-green-500 text-5xl"></i>
+                        <h1 class="text-zinc-700 font-semibold mb-2">Hurray! Order has been placed successfully.</h1>
+                        <h4 class="text-zinc-600 mb-2">Thanks for shopping</h4>
+
+        </div>
+        </div>
+        `
+            document.querySelector('section').appendChild(orderPanel)
+            setTimeout(() => {
+                window.location.href = '/cart'
+                document.querySelector('#orderPanel') ?
+                    document.querySelector('section').removeChild(document.querySelector('#orderPanel')) : ''
+            }, 3000)
         }
 
-        function selectPaymentMethod(elem) {
+        function selectPaymentMethod(elem,isAddress) {
             elem.checked = true;
+            
             if (elem.id === 'paycash') {
-                console.log(elem)
+                
                 document.querySelector("#payonline").checked = false;
                 document.querySelector(".orderbtn").textContent = 'Confirm Order'
-                document.querySelector(".orderbtn").id = "nodemailerbtn"
-            } else {
-                document.querySelector("#paycash").checked = false;
-                document.querySelector(".orderbtn").textContent = 'Proceed to Pay'
-                document.querySelector(".orderbtn").id = "rzp-button1"
-            }
+                if(isAddress) {
+                    document.querySelector(".orderbtn").id = "nodemailerbtn"
+                    document.querySelector(".orderbtn").onclick = () => {
+                        axios.post('/confirm/order', {
+                            totalAmount: '<%=cart.price%>'
+                        }).then(response => {
+                            OderPlacedPanel()
+                        })
+                    }
+                    }
+                } else {
+                    document.querySelector("#paycash").checked = false;
+                    document.querySelector(".orderbtn").textContent = 'Proceed to Pay'
+                if(isAddress) {
 
-            document.querySelector("#nodemailerbtn").addEventListener('click', function (dets) {
-                if (!'<%=loggedUser.address.street%>') {
-                    alert("please complete address before proceeding further.")
-                    return
+                    document.querySelector(".orderbtn").id = "rzp-button1"
+                    razorpayCode()
+                    
                 }
-                console.log("clicked to send mail")
-                axios.post('/confirm/order', {
-                    totalAmount: '<%=cartItems.price%>'
+                }
+            }
+      
 
-                })
-            })
-
-
+        if ('<%=loggedUser.address.street%>') {
+            document.querySelector('#orderbtn').id = 'rzp-button1'
+        } else {
+            document.querySelector('#orderbtn').onclick = createReminderPanel
         }
+
+
 
 
         function razorpayCode() {
+
             $(document).ready(function () {
                 var settings = {
                     "url": "/create/orderId",
@@ -106,25 +143,22 @@
                         "Content-Type": "application/json"
                     },
                     "data": JSON.stringify({
-                        "amount": `<%=cartItems.price*100%>`,
-                        "products":`<%=cartItems.products%>`
+                        "cartId": "<%=cart._id%>"
                     }),
                 };
-
                 //creates new orderId everytime
                 $.ajax(settings).done(function (response) {
-                    console.log(response);
 
                     var options = {
-                        "key": "rzp_test_t6kU4d1qeTuail", // Enter the Key ID generated from the Dashboard
-                        "amount": `<%=cartItems.price*100%>`, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-                        "currency": "INR",
-                        "name": "Flip",
-                        "description": "Order Transaction",
+                        "key": "rzp_test_X0Tnw9kC4MimIE", // Enter the Key ID generated from the Dashboard
+                        "amount": response.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    "currency": "INR",
+                        "name": "Ecommerce",
+                        "description": "Test Transaction",
                         "image": "https://example.com/your_logo",
-                        "order_id": response.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                        "handler": function (handlerresponse) {
-                            var settings1 = {
+                        "order_id": response.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step1
+                    "handler": function(handlerresponse) {
+                            var settings2 = {
                                 "url": "/api/payment/verify",
                                 "method": "POST",
                                 "timeout": 0,
@@ -133,16 +167,17 @@
                                 },
                                 "data": JSON.stringify({ handlerresponse }),
                             }
-                            $.ajax(settings1).done(function (response) {
-                                if(response){
-                                    alert("payment successful")
-                                }else{
-                                     alert("payment failed")
+                            $.ajax(settings2).done(function (isVerified) {
+                                if (isVerified) {
+                                    OderPlacedPanel()
+                                } else {
+                                    alert("Payment failed")
                                 }
-
                             })
                         },
-
+                        "notes": {
+                            "address": "Razorpay Corporate Office"
+                        },
                         "theme": {
                             "color": "#3399cc"
                         }
@@ -157,20 +192,25 @@
                         alert(response.error.metadata.order_id);
                         alert(response.error.metadata.payment_id);
                     });
-                    document.getElementById('rzp-button1').onclick = function (e) {
-                        rzp1.open();
-                        e.preventDefault();
+                    if (document.getElementById('rzp-button1')) {
+                        document.getElementById('rzp-button1').onclick = function (e) {
+                            rzp1.open();
+                            e.preventDefault();
+                        }
                     }
 
-                    // $("button").show();
                 });
             });
 
+
+
         }
-        razorpayCode();
+        razorpayCode()
+
+
 
 
 
     </script>
 
-    <%include ./partials/footer.ejs%>
+                    <%include ./partials/footer.ejs%>

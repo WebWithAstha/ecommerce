@@ -14,7 +14,6 @@ passport.use(new GoogleStrategy({
     const user = await userModel.findOne({email:profile.emails[0].value})
     if (user) {
         cb(null, user)
-        console.log("Existing user")
         return;
     }
     const newUser = await userModel.create({
@@ -22,7 +21,6 @@ passport.use(new GoogleStrategy({
         email: profile.emails[0].value,
         isVerified:true
     })
-    console.log("new user")
     cb(null, newUser)
 
 }));
