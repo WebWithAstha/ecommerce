@@ -16,6 +16,7 @@ const { isLoggedIn } = require('../middlewares/loggedIn_middleware.js')
 
 const Razorpay = require('razorpay');
 const cartProduct = require('../models/cartProduct.js');
+const { log } = require('console');
 const instance = new Razorpay({
   key_id: process.env.RAZOR_ID,
   key_secret: process.env.RAZOR_SECRET,
@@ -111,10 +112,28 @@ router.post('/resend/otp', isLoggedIn, async function (req, res, next) {
 router.get('/home', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
   let isAddress = false
-  if (loggedUser.address.street) {
-    isAddress = true
+  if (!loggedUser.isVerified) {
+    const otp = Math.floor(1000 + Math.random() * 9000);
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: loggedUser.email,
+      subject: "Account Verification",
+      html: `Hello ${loggedUser.username}, </br> <b>${otp}</b> is the OTP for your account verification and will expire in next 1 minute.`
+    }
+    await sendmailController.sendmail(mailOptions)
+    await otpModel.deleteMany({ user: loggedUser._id })
+    await otpModel.create({
+      user: loggedUser._id,
+      otp,
+      expiryAt: Date.now() + 60000
+    })
+    res.redirect('/account/verify')
+  }else{
+    if (loggedUser.address.street) {
+      isAddress = true
+    }
   }
-  res.render('home', { loggedUser, isAddress, productByCategory: await productController.getProductsByAllCategories() });
+  res.render('home', { loggedUser, isAddress, productByCategory: await productController.getProductsByAllCategories(loggedUser._id) });
 });
 
 router.get('/sales', isLoggedIn, async function (req, res, next) {
@@ -132,8 +151,8 @@ router.get('/checkout', isLoggedIn, async function (req, res, next) {
 router.get('/product/:productId', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
   const product = await productModel.findOne({ _id: req.params.productId })
-  const inCart= await cartProductModel.findOne({product:product._id})?true:false;
-  res.render('product', { loggedUser, product,inCart });
+  const inCart = await cartProductModel.findOne({ product: product._id }) ? true : false;
+  res.render('product', { loggedUser, product, inCart });
 });
 
 router.post('/upload/product', isLoggedIn, upload.array('images', 4), async function (req, res, next) {
@@ -194,25 +213,25 @@ router.post('/addToWishlist/:productId', isLoggedIn, async function (req, res) {
 
 router.post('/confirm/order', isLoggedIn, async function (req, res, next) {
   const loggedUser = await userModel.findOne({ username: req.session.passport.user.username })
-    const cart = await cartModel.findOne({ user: loggedUser._id }).populate({ path: 'products', populate: 'product' })
-    let quantity = 0;
-    for (let i = 0; i < cart.products.length; i++) {
-      quantity += cart.products[i].quantity;
-    }
-    const order = await orderModel.create({
-      amount: cart.price,
-      quantity,
-      buyer: loggedUser._id,
-      items: cart.products.map(cartProduct => ({ product: cartProduct.product._id, quantity: cartProduct.quantity })),
-    })
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: loggedUser.email,
-      subject: "Order placed successfully",
-      html: `Hello ${loggedUser.username}, </br>Thanks for shopping with Ecomm, your orderId is ${'order_' + order._id.toString().slice(0, 4)}.`
-    }
-    await sendmailController.sendmail(mailOptions)
-    await cartModel.findOneAndDelete({ user: loggedUser._id })
+  const cart = await cartModel.findOne({ user: loggedUser._id }).populate({ path: 'products', populate: 'product' })
+  let quantity = 0;
+  for (let i = 0; i < cart.products.length; i++) {
+    quantity += cart.products[i].quantity;
+  }
+  const order = await orderModel.create({
+    amount: cart.price,
+    quantity,
+    buyer: loggedUser._id,
+    items: cart.products.map(cartProduct => ({ product: cartProduct.product._id, quantity: cartProduct.quantity })),
+  })
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: loggedUser.email,
+    subject: "Order placed successfully",
+    html: `Hello ${loggedUser.username}, </br>Thanks for shopping with Ecomm, your orderId is ${'order_' + order._id.toString().slice(0, 4)}.`
+  }
+  await sendmailController.sendmail(mailOptions)
+  await cartModel.findOneAndDelete({ user: loggedUser._id })
   res.status(200).json("order placed successfully")
 });
 

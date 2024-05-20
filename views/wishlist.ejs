@@ -1,34 +1,47 @@
 <% include ./partials/header.ejs%>
     <section class="h-full w-full px-16 flex-1 flex gap-2 my-8">
         <%include ./partials/profile.ejs%>
-        <div class="right w-3/4 bg-white min-h-full">
-            <h1 class="text-2xl h-20 flex gap-1 items-center px-4 border-b-4 py-4">My Wishlist <span>(<%=loggedUser.wishlist.length%>)</span></h1>
-            <div class="prods w-full p-3 grid grid-cols-5 gap-3">
-                <%loggedUser.wishlist.forEach(item=>{%>
-                    <a href="/product/<%=item._id%>">
-                    <div class="prod group px-4 py-2 w-48 bg-zinc-100 rounded-lg cursor-pointer mb-2 shadow-md">
-                        <div class=" item flex flex-col gap-4 justify-center">
-                            <div class="img w-full h-36 rounded-lg overflow-hidden shrink-0 bg-zinc-200 relative">
-                                <i class="ri-arrow-right-circle-line group-hover:bg-blue-800 group-hover:opacity-100 opacity-0 transition-all duration-300 absolute text-5xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-lg rounded-full text-white"></i>
-                                <img src="/images/uploads/<%=item.images[0]%>" alt="" class="w-full h-full object-center object-cover">
-                            </div>
-                            <div class="dets">
-                                <h1 class="leading-[1] mb-1.5 line-clamp-2 font-medium"><%=item.name%></h1>
-                                
-                                <p class="text-lg font-semibold">₹<%=item.discountprice%></p>
-    
-                            </div>
+            <div class="right w-3/4 bg-white min-h-full">
+                <h1 class="text-2xl h-20 flex gap-1 items-center px-4 border-b-4 py-4">My Wishlist <span>(<%=loggedUser.wishlist.length%>)</span></h1>
+                <%if(loggedUser.wishlist.length>0){%>
+                    <div class="prods w-full p-3 grid grid-cols-5 gap-3">
+                        <%loggedUser.wishlist.forEach(item=>{%>
+                            <a href="/product/<%=item._id%>">
+                                <div
+                                    class="prod group px-4 py-2 w-48 bg-zinc-100 rounded-lg cursor-pointer mb-2 shadow-md">
+                                    <div class=" item flex flex-col gap-4 justify-center">
+                                        <div
+                                            class="img w-full h-36 rounded-lg overflow-hidden shrink-0 bg-zinc-200 relative">
+                                            <i
+                                                class="ri-arrow-right-circle-line group-hover:bg-blue-800 group-hover:opacity-100 opacity-0 transition-all duration-300 absolute text-5xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-lg rounded-full text-white"></i>
+                                            <img src="/images/uploads/<%=item.images[0]%>" alt=""
+                                                class="w-full h-full object-center object-cover">
+                                        </div>
+                                        <div class="dets">
+                                            <h1 class="leading-[1] mb-1.5 line-clamp-2 font-medium">
+                                                <%=item.name%>
+                                            </h1>
+
+                                            <p class="text-lg font-semibold">₹<%=item.discountprice%>
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <%})%>
                         </div>
-                    </div>
-                </a>
+                        <%}else{%>
+                            <h1 class="text-center mt-32">No items in wishlist.</h1>
+                            <%}%>
 
-                <%})%>
+
+
             </div>
-            
-        </div>
-    </section>  
+    </section>
 
 
 
 
-<% include ./partials/footer.ejs%>
+    <% include ./partials/footer.ejs%>

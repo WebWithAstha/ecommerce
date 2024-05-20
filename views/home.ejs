@@ -1,91 +1,118 @@
 <% include ./partials/header.ejs%>
     <header class="w-full h-96 grow px-6 mt-6 shrink-0 py-2 relative">
-        
+
         <div class=" relative h-full z-[9] flex flex-col py-10 justify-center items-center rounded-lg px-6">
-            <img class="absolute w-full h-full object-cover top-0 left-0 z-[0]" src="https://www.gyftr.com/indusindshopplus/assets/images/Offers.png" alt="">
+            <img class="absolute w-full h-full object-cover top-0 left-0 z-[0]"
+                src="https://www.gyftr.com/indusindshopplus/assets/images/Offers.png" alt="">
         </div>
 
     </header>
     <section class="w-full flex-1 h-full py-2 mt-10 pb-8">
         <%Object.keys(productByCategory).forEach(category=>{%>
-        
+
             <div class="catogory w-full mb-10">
-                <h1 class="px-6 ml-1 text-xl font-semibold mb-2"><%=category%></h1>
+                <h1 class="px-6 ml-1 text-xl font-semibold mb-2">
+                    <%=category%>
+                </h1>
                 <div class="new-prods-container h-max relative">
-                    <div class="navigators absolute w-full top-1/2 px-2 pointer-events-none -translate-y-[50%] z-[10] flex justify-between">
+                    <div
+                        class="navigators absolute w-full top-1/2 px-2 pointer-events-none -translate-y-[50%] z-[10] flex justify-between">
                         <i onclick="scrollToLeft(this)"
                             class="prod-arrow go-left hidden rounded-full px-2 py-1 absolute left-2 w-max top-1/2 pointer-events-auto left-0 text-xl shadow-xl bg-zinc-100 ri-arrow-left-s-line"></i>
                         <i onclick="scrollToRight(this)"
                             class="prod-arrow go-right hidden rounded-full px-2 py-1 absolute right-2 w-max top-1/2 pointer-events-auto right-0 text-xl shadow-xl bg-zinc-100 ri-arrow-right-s-line"></i>
                     </div>
-                    <div onscroll="hideScrollNavigators(this)" class="prods flex justify-start scrollbar gap-5 px-1 overflow-x-auto mx-6 py-2 relative">
+                    <div onscroll="hideScrollNavigators(this)"
+                        class="prods flex justify-start scrollbar gap-5 px-1 overflow-x-auto mx-6 py-2 relative">
                         <%productByCategory[category].forEach(product=>{%>
-                            
+
                             <div class="prod shrink-0 cursor-pointer relative w-56 bg-white shadow-md rounded-lg">
-                                <i id="wishlistIcon" onclick="addToWishlist(this,'<%=product._id%>')" class="<%=loggedUser.wishlist.indexOf(product._id)===-1?'ri-heart-line':'ri-heart-fill'%> wish-icon absolute top-2 right-3 z-[99] cursor-pointer text-red-700 drop-shadow-xl text-2xl hover:text-red-700"></i>
+                                <i id="wishlistIcon" onclick="addToWishlist(this,'<%=product._id%>')"
+                                    class="<%=loggedUser.wishlist.indexOf(product._id)===-1?'ri-heart-line':'ri-heart-fill'%> wish-icon absolute top-2 right-3 z-[99] cursor-pointer text-blue-700 drop-shadow-xl text-2xl hover:text-blue-700"></i>
+                                <div onclick="addToCart(this,'<%=product._id%>')"
+                                    class="absolute bottom-6 right-4 z-[99] cursor-pointer flex items-center justify-center rounded-full border-2 border-black w-6 h-6 ">
+                                    <i
+                                        class="<%=product.isCartProduct ? 'ri-check-line' : 'ri-add-line'%> font-bold pointer-events-none"></i>
+                                </div>
                                 <a class="" href="/product/<%=product._id%>">
 
-                                <div class="prod-img w-full h-64 bg-white overflow-hidden">
-                                    <img class="object-contain w-full h-full hover:scale-110 transition-all duration-500"
-                                        src="/images/uploads/<%=product.images[0]%>"
-                                        alt="Product Image">
-                                </div>
-                                <div class="p-4 prod-details">
-                                    <h2 class="text-xl font-semibold mb-2 truncate"><%=product.name%></h2>
-                                    <div class="flex w-full gap-2 items-center">
-                                        <div
-                                            class="flex items-center text-xs py-1 gap-1 bg-emerald-700 text-white w-max px-2 rounded-md">
-                                            <span class="">4</span>
-                                            <i class="ri-star-fill"></i>
+                                    <div class="prod-img w-full h-64 bg-white overflow-hidden">
+                                        <img class="object-contain w-full h-full hover:scale-110 transition-all duration-500"
+                                            src="/images/uploads/<%=product.images[0]%>" alt="Product Image">
+                                    </div>
+                                    <div class="p-4 prod-details">
+                                        <h2 class="text-xl font-semibold mb-2 truncate">
+                                            <%=product.name%>
+                                        </h2>
+
+                                        <div class="flex w-full gap-1 items-center justify-between mt-1">
+                                            <div class="flex items-center gap-1">
+
+                                                <h4 class="text-lg font-semibold">₹<span>
+                                                        <%=product.discountprice%>
+                                                    </span></h4>
+                                                <s class="text-xs text-zinc-700">₹<%=product.price%> </s>
+                                            </div>
+
+
                                         </div>
-                                        <span>(23)</span>
                                     </div>
-                                    <div class="flex w-full gap-1 items-center mt-1">
-                                        <h4 class="text-lg font-semibold">₹<span><%=product.discountprice%></span></h4>
-                                         <s class="text-xs text-zinc-700">₹<%=product.price%> </s>
-                                    </div>
-                                </div>
-                            </a>
+                                </a>
                             </div>
-                        <%})%>
-                        
+                            <%})%>
+
                     </div>
                 </div>
             </div>
-        <%})%>
-        
+            <%})%>
+
 
     </section>
-        
-        
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js" integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js' integrity='sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug==' crossorigin='anonymous' referrerpolicy='no-referrer'></script>
-    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"
+        integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'
+        integrity='sha512-16esztaSRplJROstbIIdwX3N97V1+pZvV33ABoG1H2OyTttBxEGkTsoIVsiP1iaTtM8b3+hu2kB6pQ4Clr5yug=='
+        crossorigin='anonymous' referrerpolicy='no-referrer'></script>
+
     <script>
 
-        function addressReminder(){
-            if('<%=isAddress%>'==='false'){
-            let msg =document.createElement('p')
-            msg.className ='bg-zinc-900 text-white w-max p-4  rounded-md flex items-center gap-1 fixed -bottom-[20%] z-[99] left-1/2 -translate-x-1/2'
-            msg.id="msg"
-            msg.innerHTML=` <i class="ri-error-warning-line text-red-600"></i> Please complete the address`
-            document.querySelector('body').appendChild(msg)
-            setTimeout(function(){
-                gsap.to('#msg',{
-                    bottom:"5%",
-                })
-            },1000)
-            setTimeout(function(){
-                document.querySelector('body').removeChild(document.querySelector("#msg"))
-            },5000)
+
+        function addToCart(elem, prodId) {
+            const icon = elem.querySelector('i')
+            icon.classList.toggle('ri-add-line')
+            icon.classList.toggle('ri-check-line')
+            axios.post(`/cart/add/${prodId}`)
+            .then(response=>{
+            })
         }
+
+
+        function addressReminder() {
+            if ('<%=isAddress%>' === 'false') {
+                let msg = document.createElement('p')
+                msg.className = 'bg-zinc-900 text-white w-max p-4  rounded-md flex items-center gap-1 fixed -bottom-[20%] z-[99] left-1/2 -translate-x-1/2'
+                msg.id = "msg"
+                msg.innerHTML = ` <i class="ri-error-warning-line text-red-600"></i> Please complete the address`
+                document.querySelector('body').appendChild(msg)
+                setTimeout(function () {
+                    gsap.to('#msg', {
+                        bottom: "5%",
+                    })
+                }, 1000)
+                setTimeout(function () {
+                    document.querySelector('body').removeChild(document.querySelector("#msg"))
+                }, 5000)
+            }
         }
         addressReminder()
-        
+
         function hideScrollNavigators(elem) {
             let scrollLeftIcon = elem.parentNode.querySelector('.go-left');
-            let scrollRightIcon = elem.parentNode.querySelector('.go-right hidden');
+            let scrollRightIcon = elem.parentNode.querySelector('.go-right');
             if (elem.scrollLeft > 0) {
                 scrollLeftIcon.style.display = 'block';
             } else {
@@ -97,7 +124,8 @@
                 scrollRightIcon.style.display = 'none';
             }
         }
-        
+
+
         function scrollToLeft(elem) {
             let scrollContainer = elem.parentNode.parentNode.querySelector('.prods')
             scrollContainer.scrollBy({
@@ -113,12 +141,12 @@
                 behavior: 'smooth'
             });
         }
-        
-        function addToWishlist(elem,productId){
+
+        function addToWishlist(elem, productId) {
             elem.classList.toggle('ri-heart-fill')
             elem.classList.toggle('ri-heart-line')
-            if(elem.classList.contains('ri-heart-fill')){
-                gsap.from(elem,{scale:3})
+            if (elem.classList.contains('ri-heart-fill')) {
+                gsap.from(elem, { scale: 3 })
             }
             axios.post(`addToWishlist/${productId}`)
         }

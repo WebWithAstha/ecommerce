@@ -1,6 +1,7 @@
 <%include ./partials/header.ejs%>
     <section class="h-full grow px-16 py-10 w-full flex flex-col-reverse md:flex-row gap-2 justify-between relative">
-        <%if(cart){%>
+        
+        <%if(cart && cart.products.length>0){%>
 
             <div class="bg-white w-3/5 w-full h-full scrollbar px-6  relative">
                 <div class="prod-header w-full flex items-center border-b mb-4 py-4 pr-6">

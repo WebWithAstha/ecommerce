@@ -41,9 +41,9 @@
             <div class="flex gap-2">
 
                 <%if(inCart){%>
-                    <a href="/cart">
+                    <a href="/cart" class="w-1/2">
                     <button
-                        class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-500 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-1/2 inline-block uppercase">
+                        class="text-white text-center transition-all duration-300 hover:border-transparent bg-blue-500 hover:bg-[#2550aa] py-2 px-16 font-medium border border-zinc-300 rounded-md w-full inline-block uppercase">
                         Go to Cart
                     </button>
                 </a>
@@ -64,6 +64,9 @@
 
     </section>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"
+    integrity="sha512-PJa3oQSLWRB7wHZ7GQ/g+qyv6r4mbuhmiDb8BjSFZ8NZ2a42oTtAq5n0ucWAwcQDlikAtkub+tPVCw4np27WCg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
         function changeMainImg(elem, img) {
@@ -79,8 +82,7 @@
             elem.classList.toggle('hover:bg-[#2550aa]')
             elem.classList.toggle('bg-zinc-500')
             elem.textContent = 'Going to Cart'
-            fetch(`/cart/add/${productId}`)
-                .then(raw => raw.json())
+            axios.post(`/cart/add/${productId}`)
                 .then(response => {
                     setTimeout(() => {
                         window.location.href = '/cart'

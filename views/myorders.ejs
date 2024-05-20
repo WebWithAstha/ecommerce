@@ -3,6 +3,7 @@
         <%include ./partials/profile.ejs%>
             <div class="right w-3/4 bg-white min-h-full">
                 <h1 class="text-2xl h-20 flex items-center px-4 border-b-4 py-4">My orders <span class="ml-2"> (<%=orders.length%>)</span></h1>
+                <%if(orders.length>0){%>
                 <div class="prods w-full p-3 grid grid-cols-5 gap-3">
                     <%orders.reverse().forEach(order=>{%>
                         <div class="prod px-4 py-2 w-48 bg-zinc-100 rounded-lg cursor-pointer mb-2 shadow-md">
@@ -28,6 +29,9 @@
 
 
                 </div>
+                <%}else{%>
+                    <h1 class="text-center m-auto mt-32">No order placed yet.</h1>
+                    <%}%>
     </section>
 
 
